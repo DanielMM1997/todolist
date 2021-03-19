@@ -1,0 +1,22 @@
+/* Estilos para la cabecera de la pagina */
+.header {
+  background-color: #009DF5;
+}
+
+.logo {
+  width: 80%;
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+}
+
+.options {
+  margin: auto;
+}
+
+.search {
+  flex-flow: nowrap;
+}
