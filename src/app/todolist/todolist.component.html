@@ -1,23 +1,110 @@
 <h1>{{title}}</h1>
 
-<button type="button" class="btn btn-primary btn-sm">Add Task</button>
+<button class="btn btn-sm btn-primary" (click)="open(addTaskModal)"><i class="fas fa-check"></i>Add task</button>
+
 <table class="table">
   <thead>
     <tr>
       <th scope="col">#</th>
       <th scope="col">Label</th>
       <th scope="col">Priority</th>
-      <th scope="col">Done</th>
+      <th scope="col">State</th>
+      <th scope="col">fecha</th>
       <th scope="col">Options</th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let task of todo">
-      <th scope="row">1</th>
+    <tr *ngFor="let task of lista; index as i">
+      <th scope="row">{{i+1}}</th>
       <td>{{task.label}}</td>
-      <td>{{task.priority}}</td>
-      <td>{{task.done ? '&#10003;' : '&#10005;'}}</td>
-      <td><button (click) = "deleteTask(task)">Delete</button></td>
+      <td>{{task.priority | date:'dd/MM/yyyy'}}</td>
+      <td>{{task.state}}</td>
+      <td>{{task.created_at}}</td>
+      <!-- <td>{{task.done ? '&#10003;' : '&#10005;'}}</td> -->
+      <td><a (click) = "deleteTask(task.key)"><i class="far fa-trash-alt"></i></a>
+      <a (click) = "edit(addTaskModal, task)"><i class="far fa-edit"></i></a></td>
+      <!-- <a (click) = "edit(editTaskModal, task)"><i class="far fa-edit"></i></a></td> -->
     </tr>
   </tbody>
 </table>
+
+<!-- Modal to add new task -->
+<ng-template #addTaskModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Add new task</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <!-- <form (ngSubmit)="addTask(label.value, priority.value)"> -->
+  <div class="modal-body">
+    <div class="row g-3 form-group">
+      <div class="col">
+        <input type="text" class="form-control" id="name" placeholder="Task name" aria-label="Task name" 
+        #label [(ngModel)] = "task.label" name="label">
+      </div>
+      <div class="col">
+        <label for="priority" class="col-form-label">Priority: </label>
+        <select class="form-select" aria-label="Default select example" 
+        #priority [(ngModel)]="task.priority" name="priority">
+          <option value="1" selected>Poco</option>
+          <option value="2">Medio</option>
+          <option value="3">Mucho</option>
+        </select>
+      </div>
+      <div class="col">
+        <label for="state" class="col-form-label">State: </label>
+        <select class="form-select" aria-label="Default select example" 
+        #state [(ngModel)]="task.state" name="state">
+          <option value="Pendiente" selected>Pendiente</option>
+          <option value="En proceso">En proceso</option>
+          <option value="Terminado">Terminado</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div *ngIf="editing; else createTask">
+      <button type="button" class="btn btn-outline-success" (click)="editTask(label.value, priority.value)">Save</button>
+    </div>
+    <ng-template #createTask>
+      <button type="button" class="btn btn-outline-success" (click)="addTask(label.value, priority.value)">New</button>
+    </ng-template>
+    <button type="button" class="btn btn-outline-danger" (click)="modal.close(); label.value='123';priority.value=''"  label.value='' priority.value=''>Cancel</button>
+  </div>
+  <!-- </form> -->
+</ng-template>
+
+<!-- Modal to edit a task -->
+<ng-template #editTaskModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Edit task</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form #todoForm="ngForm" (ngSubmit)="submit(todoForm.value)"></form>
+    <div class="row g-3 form-group">
+      <div class="col">
+        <input type="text" class="form-control" id="name" placeholder="Task name" aria-label="Task name" #name [(ngModel)] = "task.label" name="label">
+      </div>
+      <div class="col">
+        <label for="staticEmail" class="col-form-label">Priority: </label>
+        <select class="form-select" aria-label="Default select example" #priority [(ngModel)]="task.priority">
+          <option value="1" selected>1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" [disabled]="!todoForm.form.valid" class="btn btn-outline-success">Save</button>
+    <button type="button" class="btn btn-outline-success" (click)="editTask(name.value, priority.value)">Save</button>
+    <button type="button" class="btn btn-outline-danger" (click)="modal.close()">Cancel</button>
+  </div>
+</ng-template>
+
+
+

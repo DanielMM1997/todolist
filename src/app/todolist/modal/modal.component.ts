@@ -3,22 +3,15 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder } from '@angular/forms';
 
 import {NgForm} from '@angular/forms';
-import { TaskService } from '../services/task.service';
-import { Task } from "../models/task";
-
-import {AfterViewInit, ViewChild} from '@angular/core';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatSort} from '@angular/material/sort';
-import {MatTableDataSource} from '@angular/material/table';
+import { TaskService } from '../../services/task.service';
+import { Task } from "../../models/task";
 
 @Component({
-  selector: 'app-todolist',
-  templateUrl: './todolist.component.html',
-  styleUrls: ['./todolist.component.scss']
+  selector: 'app-modal',
+  templateUrl: './modal.component.html',
+  styleUrls: ['./modal.component.scss']
 })
-export class TodolistComponent implements OnInit, AfterViewInit {
-
-  
+export class ModalComponent implements OnInit {
 
   task: Task;
   editingTask: Task;
@@ -31,42 +24,31 @@ export class TodolistComponent implements OnInit, AfterViewInit {
     {
     label: 'taks1',
     priority: 3,
-    state: 'terminado'
+    done: false
   }, 
   {
     label: 'taks2',
     priority: 1,
-    state: 'terminado'
+    done: true
   },
   {
     label: 'taks3',
     priority: 2,
-    state: 'terminado'
+    done: false
   }];
-
-  displayedColumns: string[] = ['#', 'label', 'priority', 'state', 'created_at', 'actions'];
-  dataSource: MatTableDataSource<Task>;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-  
   // angular/angularfire2
   constructor(private modalService: NgbModal, private taskService: TaskService) {
-    this.taskService.getTasks().forEach( a => {this.lista = a} )
-    // console.log(this.tasks$)
-    
   }
 
   ngOnInit(): void {
     // this.taskService.todoList;
-    // console.log(this.taskService.getTasks())
-    // this.taskService.getTasks().forEach( a => {this.lista = a;this.dataSource = new MatTableDataSource(this.lista)} )
-    // console.log(this.lista)
-    // this.dataSource = new MatTableDataSource(this.lista);
-    // console.log(this.dataSource, 'asd')
-
-    this.dataSource = new MatTableDataSource();
-    this.taskService.getTasks().subscribe(task => {this.dataSource.data = task})
-    
+    console.log(this.taskService.getTasks())
+    this.taskService.getTasks().forEach(
+      a => {
+        console.log(a);
+        this.lista = a;
+      }
+    )
     // console.log("----------------")
     // console.log(this.taskService.todoList)
     //   .getTasks()
@@ -83,26 +65,13 @@ export class TodolistComponent implements OnInit, AfterViewInit {
     // );
   }
 
-  ngAfterViewInit(): void{
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
-
   addTask(newLabel: any, newPriority: any){
-    // var newTask = {
-    //   label: newLabel,
-    //   priority: newPriority,
-    //   done: false
-    // }
-    // this.todo.push(newTask);
+    var newTask = {
+      label: newLabel,
+      priority: newPriority,
+      done: false
+    }
+    this.todo.push(newTask);
     this.taskService.insertTask(this.task)
     this.task = new Task();
     this.editing = true;
@@ -135,7 +104,7 @@ export class TodolistComponent implements OnInit, AfterViewInit {
   }
 
   edit(content: any, task: Task) {
-    // console.log(task);
+    console.log(task);
     this.editing = true;
     this.task = task;
     this.modalService.open(content);

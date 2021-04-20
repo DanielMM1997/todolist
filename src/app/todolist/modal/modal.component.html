@@ -1,0 +1,37 @@
+<!-- Modal to add new task -->
+<ng-template #addTaskModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Add new task</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <!-- <form (ngSubmit)="addTask(label.value, priority.value)"> -->
+  <div class="modal-body">
+    <div class="row g-3 form-group">
+      <div class="col">
+        <input type="text" class="form-control" id="name" placeholder="Task name" aria-label="Task name" 
+        #label [(ngModel)] = "task.label" name="label">
+      </div>
+      <div class="col">
+        <label for="staticEmail" class="col-form-label">Priority: </label>
+        <select class="form-select" aria-label="Default select example" 
+        #priority [(ngModel)]="task.priority" name="priority">
+          <option value="1" selected>1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div *ngIf="editing; else createTask">
+      <button type="button" class="btn btn-outline-success" (click)="editTask(label.value, priority.value)">Save</button>
+    </div>
+    <ng-template #createTask>
+      <button type="button" class="btn btn-outline-success" (click)="addTask(label.value, priority.value)">New</button>
+    </ng-template>
+    <button type="button" class="btn btn-outline-danger" (click)="modal.close(); label.value='123';priority.value=''"  label.value='' priority.value=''>Cancel</button>
+  </div>
+  <!-- </form> -->
+</ng-template>
