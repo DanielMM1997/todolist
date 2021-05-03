@@ -1,34 +1,54 @@
 <h1>{{title}}</h1>
 
-<button class="btn btn-sm btn-primary" (click)="open(addTaskModal)"><i class="fas fa-check"></i>Add task</button>
-
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Label</th>
-      <th scope="col">Priority</th>
-      <th scope="col">State</th>
-      <th scope="col">fecha</th>
-      <th scope="col">Options</th>
+<mat-form-field>
+  <mat-label>Filter</mat-label>
+  <input matInput (keyup)="applyFilter($event)" placeholder="Search task" #input style="width: 80%;">
+  <button class="btn btn-sm btn-primary" (click)="openModal(addTaskModal)"><mat-icon style="font-size: 18px;">add_task</mat-icon>Add task</button>
+</mat-form-field>
+<div class="mat-elevation-z8" #tref>
+  <table mat-table [dataSource]="dataSource" matSort>
+    <ng-container matColumnDef="#">
+      <th mat-header-cell *matHeaderCellDef style="width: 10%;"> # </th>
+      <td mat-cell *matCellDef="let task; index as i" style="width: 10%;"> {{i+1}} </td>
+    </ng-container>
+    <ng-container matColumnDef="label">
+      <th class="width" mat-header-cell *matHeaderCellDef mat-sort-header> Label </th>
+      <td class="width" mat-cell *matCellDef="let task"> {{task.label}} </td>
+    </ng-container>
+    <ng-container matColumnDef="priority">
+      <th class="width" mat-header-cell *matHeaderCellDef mat-sort-header> Priority </th>
+      <td class="width" mat-cell *matCellDef="let task"> {{task.priority}} </td>
+    </ng-container> 
+    <ng-container matColumnDef="state">
+      <th class="width" mat-header-cell *matHeaderCellDef mat-sort-header> State </th>
+      <td class="width" mat-cell *matCellDef="let task" > {{task.state}} </td>
+    </ng-container>
+    <ng-container matColumnDef="created_at">
+      <th class="width" mat-header-cell *matHeaderCellDef mat-sort-header> Created_at </th>
+      <td class="width" mat-cell *matCellDef="let task" > {{task.created_at }} </td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef >Actions</th>
+      <td mat-cell *matCellDef="let task">
+        <div class="d-flex">
+          <button mat-icon-button (click) = "openModalEdit(addTaskModal, task)" matTooltip="Edit task">
+            <mat-icon color="primary" >edit</mat-icon>
+          </button>
+          <button mat-icon-button (click) = "deleteTask(task.key)" matTooltip="Delete task">
+            <mat-icon color="warn" style="width: 24px;">delete</mat-icon>
+          </button>
+        </div>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let task; columns: displayedColumns;"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
     </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let task of lista; index as i">
-      <th scope="row">{{i+1}}</th>
-      <td>{{task.label}}</td>
-      <td>{{task.priority | date:'dd/MM/yyyy'}}</td>
-      <td>{{task.state}}</td>
-      <td>{{task.created_at}}</td>
-      <!-- <td>{{task.done ? '&#10003;' : '&#10005;'}}</td> -->
-      <td><a (click) = "deleteTask(task.key)"><i class="far fa-trash-alt"></i></a>
-      <a (click) = "edit(addTaskModal, task)"><i class="far fa-edit"></i></a></td>
-      <!-- <a (click) = "edit(editTaskModal, task)"><i class="far fa-edit"></i></a></td> -->
-    </tr>
-  </tbody>
-</table>
+  </table>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]"></mat-paginator>
+</div>
 
-<!-- Modal to add new task -->
 <ng-template #addTaskModal let-modal>
   <div class="modal-header">
     <h4 class="modal-title" id="modal-basic-title">Add new task</h4>
@@ -37,74 +57,43 @@
     </button>
   </div>
   <!-- <form (ngSubmit)="addTask(label.value, priority.value)"> -->
+  <!-- <form #todoForm="ngForm" (ngSubmit)="submit(todoForm.value)"></form> -->
   <div class="modal-body">
     <div class="row g-3 form-group">
       <div class="col">
-        <input type="text" class="form-control" id="name" placeholder="Task name" aria-label="Task name" 
+        <input type="text" class="form-control" id="name" placeholder="Task name" aria-label="Task name" required
         #label [(ngModel)] = "task.label" name="label">
       </div>
       <div class="col">
         <label for="priority" class="col-form-label">Priority: </label>
         <select class="form-select" aria-label="Default select example" 
-        #priority [(ngModel)]="task.priority" name="priority">
-          <option value="1" selected>Poco</option>
-          <option value="2">Medio</option>
-          <option value="3">Mucho</option>
+          #priority [(ngModel)]="task.priority" name="priority">
+          <option value="Very High" selected>Very High</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
         </select>
       </div>
       <div class="col">
         <label for="state" class="col-form-label">State: </label>
-        <select class="form-select" aria-label="Default select example" 
-        #state [(ngModel)]="task.state" name="state">
-          <option value="Pendiente" selected>Pendiente</option>
-          <option value="En proceso">En proceso</option>
-          <option value="Terminado">Terminado</option>
+        <select class="form-select" aria-label="Default select example" #state [(ngModel)]="task.state" name="state">
+          <option value="Pending" selected>Pending</option>
+          <option value="Started">Started</option>
+          <option value="Done">Done</option>
         </select>
       </div>
     </div>
   </div>
   <div class="modal-footer">
     <div *ngIf="editing; else createTask">
-      <button type="button" class="btn btn-outline-success" (click)="editTask(label.value, priority.value)">Save</button>
+      <button type="button" class="btn btn-outline-success" (click)="editTask()">Save</button>
     </div>
     <ng-template #createTask>
-      <button type="button" class="btn btn-outline-success" (click)="addTask(label.value, priority.value)">New</button>
+      <button type="button" class="btn btn-outline-success" (click)="addTask()">New</button>
+      <!-- <button type="submit" [disabled]="!todoForm.form.valid" class="btn btn-outline-success">Save</button> -->
     </ng-template>
-    <button type="button" class="btn btn-outline-danger" (click)="modal.close(); label.value='123';priority.value=''"  label.value='' priority.value=''>Cancel</button>
+    <button type="button" class="btn btn-outline-danger" (click)="modal.close()">Cancel</button>
   </div>
   <!-- </form> -->
 </ng-template>
-
-<!-- Modal to edit a task -->
-<ng-template #editTaskModal let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Edit task</h4>
-    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <form #todoForm="ngForm" (ngSubmit)="submit(todoForm.value)"></form>
-    <div class="row g-3 form-group">
-      <div class="col">
-        <input type="text" class="form-control" id="name" placeholder="Task name" aria-label="Task name" #name [(ngModel)] = "task.label" name="label">
-      </div>
-      <div class="col">
-        <label for="staticEmail" class="col-form-label">Priority: </label>
-        <select class="form-select" aria-label="Default select example" #priority [(ngModel)]="task.priority">
-          <option value="1" selected>1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-        </select>
-      </div>
-    </div>
-  </div>
-  <div class="modal-footer">
-    <button type="submit" [disabled]="!todoForm.form.valid" class="btn btn-outline-success">Save</button>
-    <button type="button" class="btn btn-outline-success" (click)="editTask(name.value, priority.value)">Save</button>
-    <button type="button" class="btn btn-outline-danger" (click)="modal.close()">Cancel</button>
-  </div>
-</ng-template>
-
-
 
