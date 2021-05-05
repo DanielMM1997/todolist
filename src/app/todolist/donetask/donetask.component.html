@@ -1,0 +1,36 @@
+<h1 class="title">{{title}}</h1>
+
+<div *ngIf="tasks.length != 0;else notasks">
+<table class="table table-hover ">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Name</th>
+      <th scope="col">Priority</th>
+      <th scope="col">State</th>
+      <th scope="col">Created_at</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let task of tasks; let i = index">
+      <th>{{i+1}}</th>
+      <td>{{task.name}}</td>
+      <td>{{task.priority}}</td>
+      <td>{{task.state}}</td>
+      <td>{{task.created_at}}</td>
+      <td>
+        <button mat-icon-button matTooltip="Restore task" (click) = "restoreTask(task)" >
+          <mat-icon color="primary" >cached</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="Delete task" (click) = "deletePermanently(task.key)">
+          <mat-icon color="warn" >delete</mat-icon>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<ng-template #notasks>
+  <h1>You dont have done tasks yet!!!</h1>
+</ng-template>

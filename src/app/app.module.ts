@@ -21,6 +21,7 @@ import { AppComponent } from './app.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { HeaderComponent } from './header/header.component';
 import { TodolistComponent } from './todolist/todolist.component';
+import { DonetaskComponent } from './todolist/donetask/donetask.component';
 
 
 //firebase
@@ -30,7 +31,6 @@ import { AngularFireStorageModule } from '@angular/fire/storage'
 import { AngularFireAuthModule } from '@angular/fire/auth'
 import { AngularFireDatabaseModule } from '@angular/fire/database'; 
 import { environment } from '../environments/environment';
-import { DonetaskComponent } from './donetask/donetask.component';
 
 @NgModule({
   declarations: [

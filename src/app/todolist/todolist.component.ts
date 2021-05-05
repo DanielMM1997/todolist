@@ -22,7 +22,7 @@ export class TodolistComponent implements OnInit, AfterViewInit {
   editing = false;
   title = 'To Do List';
 
-  displayedColumns: string[] = ['#', 'label', 'priority', 'state', 'created_at', 'actions'];
+  displayedColumns: string[] = ['#', 'name', 'priority', 'state', 'created_at', 'actions'];
   dataSource: MatTableDataSource<Task>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -32,7 +32,7 @@ export class TodolistComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource();
-    this.taskService.getTasks().subscribe(task => {this.dataSource.data = task})
+    this.taskService.getTasks().subscribe(data => {this.dataSource.data = data})
   }
 
   ngAfterViewInit(): void{
@@ -48,8 +48,12 @@ export class TodolistComponent implements OnInit, AfterViewInit {
     }
   }
 
+  refresTable() {
+    this.taskService.getTasks().subscribe(data => {this.dataSource.data = data})
+  }
+
   openModal(content: any) {
-    this.modalService.open(content, { size: 'lg'});
+    this.modalService.open(content, { size: 'lg', centered: true});
     this.editing = false;
     this.task = new Task();
     this.task.priority = "Low"
@@ -60,6 +64,11 @@ export class TodolistComponent implements OnInit, AfterViewInit {
     this.editing = true;
     this.task = task;
     this.modalService.open(content, { size: 'lg', centered: true });
+  }
+
+  closeModal() {
+    this.refresTable()
+    this.modalService.dismissAll()
   }
 
   addTask(){
@@ -83,7 +92,8 @@ export class TodolistComponent implements OnInit, AfterViewInit {
     this.modalService.dismissAll();
   }
 
-  submit(data: any) {
-    console.log(data)
+  moveToDoneTask(task: Task) {
+    this.taskService.insertDoneTask(task);
+    this.taskService.deleteTask(task.key)
   }
 }

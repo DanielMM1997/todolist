@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DonetaskComponent } from './donetask/donetask.component';
+import { DonetaskComponent } from './todolist/donetask/donetask.component';
 import { TodolistComponent } from './todolist/todolist.component';
 
 const routes: Routes = [

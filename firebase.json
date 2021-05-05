@@ -1,8 +1,8 @@
 {
   "hosting": [
     {
-      "target": "todolist",
-      "public": "dist/todolist",
+      "target": "todolist-23872",
+      "public": "dist/todolist-23872",
       "ignore": [
         "**/.*"
       ],
@@ -17,12 +17,14 @@
           ]
         }
       ],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ]
+      "rewrites": [{
+        "source": "/public/**",
+        "destination": "/public.html"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }]
     }
   ]
 }

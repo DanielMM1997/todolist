@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Task } from '../models/task';
-import { TaskService } from '../services/task.service';
+import { Task } from '../../models/task';
+import { TaskService } from '../../services/task.service';
 
 @Component({
   selector: 'app-donetask',
@@ -9,17 +9,20 @@ import { TaskService } from '../services/task.service';
 })
 export class DonetaskComponent implements OnInit {
   title = 'Done Task';
-  tasks: Array<Task[]>;
-  displayedColumns: string[] = ['#', 'label', 'priority', 'state', 'created_at'];
-
+  tasks: Task[];
 
   constructor(private taskService: TaskService) { }
 
   ngOnInit(): void {
-    this.taskService.getTasks().subscribe(task => {this.tasks.push(task);})
-  }
+    this.taskService.getDoneTask().subscribe(task => this.tasks = task)
+  } 
 
   deletePermanently(task: string) {
-    this.taskService.deleteTask(task)
+    this.taskService.deleteDoneTask(task)
+  }
+
+  restoreTask(task: Task) {
+    this.taskService.insertTask(task);
+    this.taskService.deleteDoneTask(task.key);
   }
 }
