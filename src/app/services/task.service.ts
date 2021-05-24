@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database'; 
+import { AngularFirestore } from '@angular/fire/firestore';
 
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -14,7 +15,7 @@ export class TaskService {
   doneTasksList: AngularFireList<Task>;
   tasks: Observable<Task[]>;
   
-  constructor(private fb: AngularFireDatabase) {
+  constructor(private fb: AngularFireDatabase, private fs: AngularFirestore) {
     this.tasksList = fb.list('tasks');
     this.doneTasksList = fb.list('donetasks');
   }
@@ -39,6 +40,10 @@ export class TaskService {
       }))
     );
     return this.tasks;
+  }
+
+  getDoneTask2() {
+    return this.fs.collection('tasks', ref => ref.where('state', '==', 'Done')).valueChanges();
   }
 
   getTask(key: string) {

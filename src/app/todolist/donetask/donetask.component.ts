@@ -15,6 +15,12 @@ export class DonetaskComponent implements OnInit {
 
   ngOnInit(): void {
     this.taskService.getDoneTask().subscribe(task => this.tasks = task)
+    // this.taskService.getDoneTask().subscribe(tasks => tasks.forEach(
+    //   task => {
+    //     console.log(task)
+    //     this.tasks.push(task as Task)
+    //   }
+    // )) 
   } 
 
   deletePermanently(task: string) {
