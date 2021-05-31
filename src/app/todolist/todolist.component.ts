@@ -32,7 +32,7 @@ export class TodolistComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource();
-    this.taskService.getTasks().subscribe(data => {this.dataSource.data = data})
+    this.loadTable();
   }
 
   ngAfterViewInit(): void{
@@ -48,8 +48,13 @@ export class TodolistComponent implements OnInit, AfterViewInit {
     }
   }
 
-  refresTable() {
+  loadTable() {
     this.taskService.getTasks().subscribe(data => {this.dataSource.data = data})
+  }
+
+  loadStartedTasks() {
+    this.dataSource = new MatTableDataSource();
+    this.taskService.getStartedTasks().subscribe(data => {this.dataSource.data = data})
   }
 
   openModal(content: any) {
@@ -67,7 +72,7 @@ export class TodolistComponent implements OnInit, AfterViewInit {
   }
 
   closeModal() {
-    this.refresTable()
+    this.loadTable()
     this.modalService.dismissAll()
   }
 

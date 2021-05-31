@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TaskService } from '../services/task.service';
+import { TodolistComponent } from "../todolist/todolist.component";
 
 @Component({
   selector: 'app-sidebar',
@@ -7,9 +10,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SidebarComponent implements OnInit {
 
-  constructor() { }
+  Table : TodolistComponent;
+  constructor(private modalService: NgbModal, private taskService: TaskService) { 
+    this.Table = new TodolistComponent(modalService,  taskService)
+  }
 
   ngOnInit(): void {
   }
 
+  loadStarted() {
+    this.Table.loadStartedTasks();
+  }
 }

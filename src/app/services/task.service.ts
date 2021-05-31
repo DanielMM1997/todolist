@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database'; 
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -11,20 +11,20 @@ import { Task } from '../models/task';
 })
 export class TaskService {
 
-  tasksList: AngularFireList<Task>;
-  doneTasksList: AngularFireList<Task>;
+  tasksList: AngularFirestoreCollection<Task>;
+  doneTasksList: AngularFirestoreCollection<Task>;
   tasks: Observable<Task[]>;
   
-  constructor(private fb: AngularFireDatabase, private fs: AngularFirestore) {
-    this.tasksList = fb.list('tasks');
-    this.doneTasksList = fb.list('donetasks');
+  constructor(private fs: AngularFirestore) {
+    this.tasksList = fs.collection('tasks');
+    this.doneTasksList = fs.collection('donetasks');
   }
   
   getTasks() {
     this.tasks = this.tasksList.snapshotChanges().pipe(
       map(actions => actions.map(a => {
-        const data = a.payload.val();
-        data.key = a.payload.key;
+        const data = a.payload.doc.data();
+        data.key = a.payload.doc.id;
         return data;
       }))
     );
@@ -34,16 +34,16 @@ export class TaskService {
   getDoneTask() {
     this.tasks = this.doneTasksList.snapshotChanges().pipe(
       map(actions => actions.map(a => {
-        const data = a.payload.val();
-        data.key = a.payload.key;
+        const data = a.payload.doc.data();
+        data.key = a.payload.doc.id;
         return data;
       }))
     );
     return this.tasks;
   }
 
-  getDoneTask2() {
-    return this.fs.collection('tasks', ref => ref.where('state', '==', 'Done')).valueChanges();
+  getStartedTasks() {
+    return this.fs.collection<Task>('tasks', ref => ref.where('state', '==', 'Started')).valueChanges();
   }
 
   getTask(key: string) {
@@ -51,24 +51,37 @@ export class TaskService {
   }
 
   insertTask(task: Task) {
-    task.created_at = new Date().toLocaleDateString();
-    this.tasksList.push(task);
+    var aux = {
+      key: this.fs.createId(),
+      name: task.name, 
+      priority: task.priority,
+      state: task.state, 
+      created_at: new Date().toLocaleDateString()
+    }
+    this.tasksList.add(aux);
   }
 
   insertDoneTask(task: Task) {
-    task.created_at = new Date().toLocaleDateString();
-    this.doneTasksList.push(task);
+    var aux = {
+      name: task.name, 
+      priority: task.priority,
+      state: task.state, 
+      created_at: new Date().toLocaleDateString()
+    }
+    console.log(task);
+    
+    this.doneTasksList.add(task);
   }
 
   updateTask(task: Task) {
-    this.tasksList.update(task.key, task)
+    this.tasksList.ref.doc(task.key).update(task)
   }
 
   deleteTask(key: string) {
-    this.tasksList.remove(key);
+    this.tasksList.doc(key).delete()
   }
 
   deleteDoneTask(key: string) {
-    this.doneTasksList.remove(key);
+    this.doneTasksList.doc(key).delete()
   }
 }
